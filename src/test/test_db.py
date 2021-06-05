@@ -6,9 +6,11 @@ from settings import DATABASE
 
 
 class DBTest(unittest.TestCase):
-    set_up_database_and_tables()
 
-    def test_0_database_exists(self):
+    def setUp(self) -> None:
+        set_up_database_and_tables()
+
+    def test_database_exists(self):
         self.assertTrue(DATABASE in glob("*"))
 
 

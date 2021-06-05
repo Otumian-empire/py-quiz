@@ -1,48 +1,41 @@
 import unittest
 import sqlite3
 
-from models.category import Category
+from models import Category
 from set_up import set_up_database_and_tables
 
 
 class CategoryTest(unittest.TestCase):
-    set_up_database_and_tables()
 
-    def test_0_create_category(self):
-        self.assertTrue(Category().create("POLITICS"))
-        self.assertTrue(Category().create("BUSINESS"))
-        self.assertTrue(Category().create("COMPUTER SCIENCE"))
+    def setUp(self) -> None:
+        set_up_database_and_tables()
+        Category().create("POLITICS")
+        Category().create("BUSINESS")
 
-    def test_1_create_category(self):
+    def test_create_category_returns_true_on_success(self):
+        self.assertTrue(Category().create("SCIENCE"))
+
+    def test_create_category_raises_intergrity_error_for_existing_category(self):
         with self.assertRaises(sqlite3.IntegrityError):
             Category().create("POLITICS")
 
-        with self.assertRaises(sqlite3.IntegrityError):
-            Category().create("BUSINESS")
+    def test_read_all_categories(self):
+        self.assertEqual(len(Category().read().all()), 2)
 
-        with self.assertRaises(sqlite3.IntegrityError):
-            Category().create("COMPUTER SCIENCE")
-
-    def test_2_read_all_categories(self):
-        rows = Category().read().all()
-
-        self.assertEqual(len(rows), 3)
-
-    def test_3_read_one_category(self):
+    def test_read_one_category_returns_only_one_category(self):
         ID = 1
         NAME = "POLITICS"
-        row = Category().read().one(ID)
 
-        self.assertEqual(row['name'], NAME)
+        self.assertEqual(Category().read().one(ID)['name'], NAME)
 
-    def test_4_update_category(self):
+    def test_update_category_returns_true_on_success_and_changes_required_fields(self):
         ID = 1
         NAME = "GOVERNMENTS"
 
         self.assertTrue(Category().update(ID, name=NAME))
         self.assertEqual(Category().read().one(ID)['name'], NAME)
 
-    def test_5_delete_category(self):
+    def test_delete_category_returns_true_on_success(self):
         ID = 1
 
         self.assertTrue(Category().delete(ID))

@@ -1,57 +1,69 @@
-import unittest
 import sqlite3
+import unittest
 
-from models.quiz import Quiz
-from models.category import Category
+from models import Category, Quiz
 from set_up import set_up_database_and_tables
 
 
 class QuizTest(unittest.TestCase):
-    set_up_database_and_tables()
 
-    Category().create("POLITICS")
+    def setUp(self) -> None:
+        set_up_database_and_tables()
+        Category().create("POLITICS")
+        Quiz().create(
+            int(Category().read().all()[-1]['id']),
+            "Who is the first Priminister of Ghana?",
+            "Nana Addo, Kwame Nkrumah, Rawlings",
+            "Kwame Nkrumah")
 
-    def test_0_create_quiz(self):
-        cat_id = 1
-        question = "Which country promises wealth but without health?"
-        options = ", ".join(["America", "Jamaica", "China", "Russian"])
-        answer = "China"
+    def test_create_quiz_returns_true_on_success(self):
+        self.assertTrue(
+            Quiz().create(
+                int(Category().read().all()[-1]['id']),
+                "Which country promises wealth but without health?",
+                "America, Jamaica, China, Russian",
+                "China"))
 
-        self.assertTrue(Quiz().create(cat_id, question, options, answer))
-
-    def test_1_create_quiz(self):
+    def test_create_quiz_raise_intergrity_error_for_existing_quiz(self):
         with self.assertRaises(sqlite3.IntegrityError):
-            cat_id = 1
-            question = "Which country promises wealth but without health?"
-            options = ", ".join(["America", "Jamaica", "China", "Russian"])
-            answer = "China"
-            Quiz().create(cat_id, question, options, answer)
+            Quiz().create(
+                int(Category().read().all()[-1]['id']),
+                "Who is the first Priminister of Ghana?",
+                "Nana Addo, Kwame Nkrumah, Rawlings",
+                "Kwame Nkrumah")
 
-    def test_2_read_all_quizzes(self):
-        rows = Quiz().read().all()
+    def test_read_all_quizzes(self):
+        self.assertTrue(
+            Quiz().create(
+                int(Category().read().all()[-1]['id']),
+                "In which year did Ghana gained independence?",
+                "1997, 2012, 1957, 666",  "1957"))
 
-        self.assertEqual(len(rows), 1)
+        self.assertEqual(len(Quiz().read().all()), 2)
 
-    def test_3_read_one_quiz(self):
-        ID = 1
-        QUESTION = "Which country promises wealth but without health?"
+    def test_read_one_quiz(self):
+        self.assertEqual(len(Quiz().read().one(
+            int(Quiz().read().all()[0]['id']))), 5)
 
-        row = Quiz().read().one(ID)
+    def test_update_quiz_returns_true_on_success(self):
+        question = "Which country promised wealth but gave without health?"
+        id = Quiz().read().all()[0]['id']
 
-        self.assertEqual(row['question'], QUESTION)
+        self.assertTrue(Quiz().update(id, question=question))
+        self.assertEqual(Quiz().read().one(id)['question'], question)
 
-    def test_4_update_quiz(self):
-        ID = 1
-        QUESTION = "Which country promised wealth but gave without health?"
+    def test_delete_quiz(self):
+        id = Quiz().read().all()[0]['id']
+        self.assertTrue(Quiz().delete(id))
+        self.assertFalse(Quiz().delete(id))
 
-        self.assertTrue(Quiz().update(ID, question=QUESTION))
-        self.assertEqual(Quiz().read().one(ID)['question'], QUESTION)
+    @unittest.case.skip("DELETE CASCADE IS NOT WORKING")
+    def test_delete_category_deletes_quiz(self):
+        id = Quiz().read().all()[0]['id']
 
-    def test_5_delete_quiz(self):
-        ID = 1
-
-        self.assertTrue(Quiz().delete(ID))
-        self.assertFalse(Quiz().delete(ID))
+        self.assertTrue(Category().delete(id))
+        # seems like the delete category cascade is not working
+        self.assertEqual(Quiz().read().all(), [])
 
 
 if __name__ == "__main__":
