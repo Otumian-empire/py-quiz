@@ -1,5 +1,5 @@
 from settings import DatabaseConfig
-from utils.utils import placeholder_update
+from utils import placeholder_update
 
 
 class Category(DatabaseConfig):
