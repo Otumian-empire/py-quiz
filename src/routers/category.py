@@ -3,42 +3,37 @@ from inquirer import Confirm, prompt, Text, Checkbox
 
 class CategoryRouter:
 
-    def main(self):
+    def main(self) -> dict:
         questions = [
             Checkbox(
                 name="main",
                 message="SELECT A CATEGORY OPTION:",
-                choices=["CREATE", "READ", "UPDATE",  "DELETE"],
-                default=["CREATE"]),
+                choices=["CREATE", "READ", "UPDATE",  "DELETE"])
         ]
 
         return prompt(questions)
 
-    def create(self):
+    def create(self) -> dict:
         questions = [
-            Text(name="category", message="Enter category name"),
+            Text(name="name", message="Enter category name"),
         ]
 
         return prompt(questions)
 
-    def read(self):
+    def update(self, id) -> dict:
         questions = [
-            Text(name="id", message="Enter category id"),
+            Text(name="name",
+                 message=f"Enter new name for category with ID={id}")
         ]
 
         return prompt(questions)
 
-    def update(self):
+    def delete(self, id) -> dict:
         questions = [
-            Text(name="id", message="Enter id"),
-            Text(name="name", message="Enter name"),
-        ]
-
-        return prompt(questions)
-
-    def delete(self):
-        questions = [
-            Text(name="id", message="Enter id"),
+            Confirm(
+                name="DELETE",
+                message=f"Delete Category with ID {id}",
+                default=True)
         ]
 
         return prompt(questions)

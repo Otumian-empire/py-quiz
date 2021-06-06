@@ -2,11 +2,14 @@ all_questions.py
 app.py
 create_question.py
 huge_question.py
-main.py
 Pipfile
 Pipfile.lock
 question_format.md
 questions
 README.md
 selection.py
+__pycache__
+.pytest_cache
 utils.py
+.ipynb_checkpoints
+.vscode

@@ -2,31 +2,32 @@ from models import Category
 
 
 class CategoryView:
-    def create(self, cat_name):
+
+    def create(self, name) -> bool:
         try:
-            return Category().create(cat_name)
+            return Category().create(name)
         except:
             return False
 
-    def read_one(self, id):
+    def read_one(self, id) -> list:
         try:
             return Category().read().one(id)
         except:
-            return False
+            return []
 
-    def read_all(self, id=None):
+    def read_all(self) -> list:
         try:
             return Category().read().all()
         except:
-            return False
+            return []
 
-    def update(self, id, **kwargs):
+    def update(self, id, **kwargs) -> bool:
         try:
             return Category().update(id, **kwargs)
         except:
             return False
 
-    def delete(self, id):
+    def delete(self, id) -> bool:
         try:
             return Category().delete(id)
         except:
