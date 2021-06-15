@@ -3,24 +3,58 @@ from utils import placeholder_update
 
 
 class Category(DatabaseConfig):
-    """ Category:  """
+    """
+    >>> cat = Category()
+    Category Module interface - which inherites the DatabaseConfig class.
 
-    def create(self, cat_name):
-        """ CREATE category """
+    Category Table:
+        - id: int (PK)
+        - name: str
+
+    Methods:
+        - create
+        - update
+        - delete
+
+    Class:
+        - read
+
+    """
+
+    def create(self, cat_name: str) -> bool:
+        """
+        >>> Category().create(cat_name:str) -> bool
+        Create new category. Returns False on failure or when there is IntegrityError else True for success.
+        """
+
         sql = "INSERT INTO category (name) VALUES (?)"
         values = [cat_name, ]
 
         return self.write(sql, values)
 
     class read(DatabaseConfig):
-        """ 
-        read().one(id: int) - read an element by ID
+        """
+        >>> row = read().one(id: int) -> sqlite3.Row 
+        >>> print(row['id'], row['name'])
+        Returns a sqlite3.Row passing an integer ID
 
-        read().all() - read all elements
+        >>> rows = read().all() -> list
+        >>> for row in rows:
+        >>>     print(row['id'], row['name'])
+        Returns a list of sqlite3.Rows else and empty list
+
+        Methods:
+            - one
+            - all
         """
 
-        def one(self, id):
-            """ SELECT a category by ID """
+        def one(self, id: int):
+            """
+            >>> row = read().one(id: int) -> sqlite3.Row 
+            >>> print(row['id'], row['name'])
+            Returns a sqlite3.Row passing an integer ID
+            """
+
             sql = "SELECT id, name FROM category WHERE "
             sql += placeholder_update(["id"])
             values = [id, ]
@@ -31,7 +65,13 @@ class Category(DatabaseConfig):
             return row
 
         def all(self):
-            """ SELECT all categories """
+            """ 
+            >>> rows = read().all() -> list
+            >>> for row in rows:
+            >>>     print(row['id'], row['name'])
+            Returns a list of sqlite3.Rows else and empty list
+            """
+
             sql = "SELECT id, name FROM category"
 
             cur = self.get_cursor()
@@ -40,7 +80,12 @@ class Category(DatabaseConfig):
             return row
 
     def update(self, id: int, **kwargs) -> bool:
-        """ UPDATE category by ID """
+        """
+        >>> Category().update(id: int, **kwargs) -> bool
+        >>> Category().update(id: int, name: str = "some str") -> bool
+        Update category, where id is the category's ID. Returns False on failure else True for success.
+        """
+
         sql = "UPDATE category SET "
         sql += placeholder_update(list(kwargs.keys()))
         sql += " WHERE "
@@ -51,7 +96,11 @@ class Category(DatabaseConfig):
         return self.write(sql, values)
 
     def delete(self, id: int) -> bool:
-        """ DELETE category by ID """
+        """
+        >>> Category().delete(id: int) -> bool
+        Delete category by ID. Returns False on failure else True for success.
+        """
+
         sql = "DELETE FROM category WHERE "
         sql += placeholder_update(["id"])
         values = [id, ]
