@@ -6,10 +6,11 @@ Pipfile
 Pipfile.lock
 question_format.md
 questions
-README.md
 selection.py
 __pycache__
 .pytest_cache
 utils.py
 .ipynb_checkpoints
 .vscode
+logger.py
+quiz_db

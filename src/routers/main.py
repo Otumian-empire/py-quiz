@@ -1,3 +1,4 @@
+from routers import quiz
 from inquirer import Checkbox, prompt
 
 
@@ -57,6 +58,17 @@ class MainRouter:
                 choices=[
                     f"{row['id']} - {row['name']}"
                     for row in categories])
+        ]
+
+        return prompt(questions)
+
+    def play_quiz(self, quizzes: list) -> dict:
+        questions = [
+            Checkbox(
+                name=quiz['id'],
+                message=quiz['question'].upper(),
+                choices=quiz['options'].split(", "),)
+            for quiz in quizzes
         ]
 
         return prompt(questions)

@@ -1,5 +1,3 @@
-#!/home/otumian/.local/share/virtualenvs/py-quiz-d35Yy3Ga/bin/python3.8
-
 from routers import CategoryRouter, MainRouter, QuizRouter
 from views import CategoryView, MainView, QuizView
 
@@ -57,7 +55,7 @@ def category_app() -> None:
             delete = CategoryRouter().delete(id)['DELETE']
 
             if delete:
-                if CategoryView().delete(id):
+                if CategoryView().delete(int(id)):
                     print("OK")
                 else:
                     print("Ok - no row affected")
@@ -168,6 +166,17 @@ def quiz_app() -> None:
 
 
 def play_app() -> None:
+
+    def start_game(questions):
+        results = list(MainRouter().play_quiz(questions).values())
+
+        answers = [question['answer'] for question in questions]
+
+        response = MainView().evaluate_result((results, answers))
+
+        print(f"RESULTS: {response['scores']}/{response['total']}")
+        print(response['message'])
+
     play = MainRouter().play()['play']
 
     if not play:
@@ -176,15 +185,53 @@ def play_app() -> None:
 
     option = play[0].split(" - ")[0].strip()
 
-    main_view = MainView()
-
     if "CATEGORY" == option:
-        return main_view.category()
-    elif "QUIZ" == option:
-        return main_view.quiz()
-    elif "RANDOM" == option:
-        return main_view.random()
+        rows = MainView().category()
+        cat = MainRouter().category(rows)['id']
 
+        if not cat:
+            print("No Category selected")
+            return
+
+        cat_id = cat[0].split(" - ")[0]
+        quizzes = MainView().quiz()
+
+        questions = [quiz for quiz in quizzes
+                     if quiz['cat_id'] == int(cat_id)]
+
+        if not questions:
+            print("Question is not selected.")
+            return
+
+        start_game(questions)
+
+    elif "QUIZ" == option:
+        rows = MainView().quiz()
+        row_ids = MainRouter().quiz(rows)['id']
+
+        if row_ids:
+            quizzes = MainView().quiz()
+
+            questions = [quizzes[int(row_id.split(' - ')[0].strip())]
+                         for row_id in row_ids]
+
+            if not questions:
+                print("Question is not selected.")
+                return
+
+            start_game(questions)
+
+        else:
+            print("row selection ERROR")
+
+    elif "RANDOM" == option:
+        questions = MainView().random()
+
+        if not questions:
+            print("Question is not selected.")
+            return
+
+        start_game(questions)
     return
 
 
