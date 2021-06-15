@@ -12,57 +12,62 @@ def category_app() -> None:
         create = CategoryRouter().create()
         name = create['name']
 
-        if name:
-            if CategoryView().create(name):
-                print("OK")
-            else:
-                print("create ERROR")
-        else:
+        if not name:
             print("name ERROR")
+            return
+
+        if not CategoryView().create(name):
+            print("create ERROR")
+            return
+
+        print("OK - CREATED")
 
     elif main[0] == "READ":
         rows = CategoryView().read_all()
 
-        if rows:
-            MainRouter().category(rows)
-        else:
+        if not rows:
             print("read ERROR")
+            return
+
+        MainRouter().category(rows)
 
     elif main[0] == "UPDATE":
         rows = CategoryView().read_all()
         row_id = MainRouter().category(rows)['id']
 
-        if row_id:
-            id = row_id[0].split(' - ')[0].strip()
-
-            update = CategoryRouter().update(id)
-
-            if CategoryView().update(id, **update):
-                print("OK")
-            else:
-                print("update ERROR")
-
-        else:
+        if not row_id:
             print("row selection ERROR")
+            return
+
+        id = row_id[0].split(' - ')[0].strip()
+        update = CategoryRouter().update(id)
+
+        if not CategoryView().update(id, **update):
+            print("update ERROR")
+            return
+
+        print("OK - UPDATE")
 
     elif main[0] == "DELETE":
         rows = CategoryView().read_all()
         row_id = MainRouter().category(rows)['id']
 
-        if row_id:
-            id = row_id[0].split(' - ')[0].strip()
-
-            delete = CategoryRouter().delete(id)['DELETE']
-
-            if delete:
-                if CategoryView().delete(int(id)):
-                    print("OK")
-                else:
-                    print("Ok - no row affected")
-            else:
-                print("No row affected")
-        else:
+        if not row_id:
             print("row selection ERROR")
+            return
+
+        id = row_id[0].split(' - ')[0].strip()
+        delete = CategoryRouter().delete(id)['DELETE']
+
+        if not delete:
+            print("No row affected")
+            return
+
+        if not CategoryView().delete(int(id)):
+            print("Ok - no row affected")
+            return
+
+        print("OK - DELETE")
 
     return
 
@@ -72,6 +77,7 @@ def quiz_app() -> None:
 
     if not main:
         print("No Quiz option selected")
+        return
 
     elif main[0] == "CREATE":
         rows = CategoryView().read_all()
@@ -80,13 +86,15 @@ def quiz_app() -> None:
             create = CategoryRouter().create()
             name = create['name']
 
-            if name:
-                if CategoryView().create(name):
-                    rows = CategoryView().read_all()
-                else:
-                    print("name ERROR - No name for Category")
-            else:
+            if not name:
                 print("create ERROR - every quiz needs a Category")
+                return
+
+            if not CategoryView().create(name):
+                print("name ERROR - No name for Category")
+                return
+
+            rows = CategoryView().read_all()
 
         row_id = MainRouter().category(rows)['id']
 
@@ -114,53 +122,55 @@ def quiz_app() -> None:
     elif main[0] == "READ":
         rows = QuizView().read_all()
 
-        if rows:
-            MainRouter().quiz(rows)
-        else:
+        if not rows:
             print("read ERROR")
+            return
+
+        MainRouter().quiz(rows)
 
     elif main[0] == "UPDATE":
         rows = QuizView().read_all()
         row_id = MainRouter().quiz(rows)['quiz']
 
         if row_id:
-            print(row_id)
-
-            id = row_id[0].split(' - ')[0].strip()
-
-            update = QuizRouter().update(id)
-            update = {k: v for k, v in update.items() if v}
-
-            if update and all(update.values()):
-
-                if QuizView().update(id, **update):
-                    print("OK")
-                else:
-                    print("update ERROR")
-            else:
-                print("update ERROR - at least a field is needed for update")
-
-        else:
             print("row selection ERROR")
+            return
+
+        id = row_id[0].split(' - ')[0].strip()
+
+        update = QuizRouter().update(id)
+        update = {k: v for k, v in update.items() if v}
+
+        if not update or not all(update.values()):
+            print("update ERROR - at least a field is needed for update")
+            return
+
+        if not QuizView().update(id, **update):
+            print("update ERROR")
+            return
+
+        print("OK - UPDATED")
 
     elif main[0] == "DELETE":
         rows = QuizView().read_all()
         row_id = MainRouter().quiz(rows)['id']
 
-        if row_id:
-            id = row_id[0].split(' - ')[0].strip()
-
-            delete = QuizRouter().delete(id)['DELETE']
-
-            if delete:
-                if QuizView().delete(id):
-                    print("OK")
-                else:
-                    print("Ok - no row affected")
-            else:
-                print("No row affected")
-        else:
+        if not row_id:
             print("row selection ERROR")
+            return
+
+        id = row_id[0].split(' - ')[0].strip()
+        delete = QuizRouter().delete(id)['DELETE']
+
+        if not delete:
+            print("No row affected")
+            return
+
+        if not QuizView().delete(id):
+            print("Ok - no row affected")
+            return
+
+        print("OK - DELETED")
 
     return
 
@@ -169,7 +179,6 @@ def play_app() -> None:
 
     def start_game(questions):
         results = list(MainRouter().play_quiz(questions).values())
-
         answers = [question['answer'] for question in questions]
 
         response = MainView().evaluate_result((results, answers))
@@ -209,20 +218,19 @@ def play_app() -> None:
         rows = MainView().quiz()
         row_ids = MainRouter().quiz(rows)['id']
 
-        if row_ids:
-            quizzes = MainView().quiz()
-
-            questions = [quizzes[int(row_id.split(' - ')[0].strip())]
-                         for row_id in row_ids]
-
-            if not questions:
-                print("Question is not selected.")
-                return
-
-            start_game(questions)
-
-        else:
+        if not row_ids:
             print("row selection ERROR")
+            return
+
+        quizzes = MainView().quiz()
+        questions = [quizzes[int(row_id.split(' - ')[0].strip())]
+                     for row_id in row_ids]
+
+        if not questions:
+            print("Question is not selected.")
+            return
+
+        start_game(questions)
 
     elif "RANDOM" == option:
         questions = MainView().random()
@@ -232,6 +240,7 @@ def play_app() -> None:
             return
 
         start_game(questions)
+
     return
 
 
@@ -247,6 +256,7 @@ def app() -> None:
 
         if not admin:
             print("No Admin option selected")
+            return
 
         elif admin[0] == 'Category':
             return category_app()
