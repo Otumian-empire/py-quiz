@@ -5,6 +5,12 @@ from inquirer import Checkbox, prompt
 class MainRouter:
 
     def main(self) -> dict:
+        """    
+        >>> MainRouter().main()
+        Returns a dictionary with key, main.
+        Displays a checkbox based question with choices to pick from.        
+        """
+
         questions = [
             Checkbox(
                 name="main",
@@ -15,6 +21,12 @@ class MainRouter:
         return prompt(questions)
 
     def admin(self) -> dict:
+        """    
+        >>> MainRouter().admin()
+        Returns a dictionary with key, admin.
+        Displays a checkbox based question with choices to pick from.        
+        """
+
         questions = [
             Checkbox(
                 name="admin",
@@ -25,6 +37,12 @@ class MainRouter:
         return prompt(questions)
 
     def play(self) -> dict:
+        """    
+        >>> MainRouter().play()
+        Returns a dictionary with key, play.
+        Displays a checkbox based question with choices to pick from.        
+        """
+
         questions = [
             Checkbox(
                 name="play",
@@ -38,6 +56,12 @@ class MainRouter:
         return prompt(questions)
 
     def quiz(self, quizzes) -> dict:
+        """    
+        >>> MainRouter().quiz()
+        Returns a dictionary with key, main.
+        Displays a checkbox based question with choices to pick from.        
+        """
+
         questions = [
             Checkbox(
                 name="id",
@@ -50,6 +74,11 @@ class MainRouter:
         return prompt(questions)
 
     def category(self, categories) -> dict:
+        """    
+        >>> MainRouter().category()
+        Returns a dictionary with key, id.
+        Displays a checkbox based question with choices to pick from.        
+        """
 
         questions = [
             Checkbox(
@@ -63,6 +92,12 @@ class MainRouter:
         return prompt(questions)
 
     def play_quiz(self, quizzes: list) -> dict:
+        """    
+        >>> MainRouter().play()
+        Returns a dictionary with key, quiz['id] from the quizzes.
+        Displays a checkbox based question with choices to pick from.        
+        """
+
         questions = [
             Checkbox(
                 name=quiz['id'],

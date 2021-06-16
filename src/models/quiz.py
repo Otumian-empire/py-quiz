@@ -32,8 +32,8 @@ class Quiz(DatabaseConfig):
         Create new quiz. Returns False on failure or when there is IntegrityError else True for success.
         """
 
-        sql = "INSERT INTO quiz(cat_id, question, options, answer) VALUES "
-        sql += "(?, ?, ?, ?)"
+        sql = " ".join(["INSERT INTO quiz(cat_id, question, options, answer)",
+                        "VALUES (?, ?, ?, ?)"])
 
         return self.write(sql, list(args))
 
@@ -60,9 +60,9 @@ class Quiz(DatabaseConfig):
             Returns a sqlite3.Row passing an integer ID
             """
 
-            sql = "SELECT id, cat_id, question, options, answer "
-            sql += "FROM quiz WHERE "
-            sql += placeholder_update(["id"])
+            sql = " ".join(["SELECT id, cat_id, question, options, answer",
+                            "FROM quiz WHERE",
+                            placeholder_update(["id"])])
 
             cur = self.get_cursor()
             row = cur.execute(sql, [id]).fetchone() or []
@@ -87,14 +87,13 @@ class Quiz(DatabaseConfig):
     def update(self, id: int, **kwargs) -> bool:
         """
         >>> Quiz().update(id: int, **kwargs) -> bool
-        >>> Quiz().update(id: int, cat_id:int = CAT_ID, question: str = Q_STR, options: str = OP_STR, answer: str = A_STR) -> bool
+        >>> Quiz().update(id: int [, cat_id:int = CAT_ID | question: str = Q_STR | options: str = OP_STR | answer: str = A_STR]) -> bool
         Update category, where id is the category's ID. Returns False on failure else True for success.
         """
 
-        sql = "UPDATE quiz SET "
-        sql += placeholder_update(list(kwargs.keys()))
-        sql += " WHERE "
-        sql += placeholder_update(["id"])
+        sql = " ".join(["UPDATE quiz SET",
+                        placeholder_update(list(kwargs.keys())),
+                        "WHERE", placeholder_update(["id"])])
 
         values = list(kwargs.values()) + [id, ]
 
@@ -106,8 +105,7 @@ class Quiz(DatabaseConfig):
         Delete Quiz by ID. Returns False on failure else True for success.
         """
 
-        sql = "DELETE FROM quiz WHERE "
-        sql += placeholder_update(["id"])
+        sql = " ".join(["DELETE FROM quiz WHERE", placeholder_update(["id"])])
         values = [id, ]
 
         return self.write(sql, values)

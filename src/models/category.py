@@ -55,8 +55,9 @@ class Category(DatabaseConfig):
             Returns a sqlite3.Row passing an integer ID
             """
 
-            sql = "SELECT id, name FROM category WHERE "
-            sql += placeholder_update(["id"])
+            sql = " ".join(["SELECT id, name FROM category WHERE",
+                            placeholder_update(["id"])])
+
             values = [id, ]
 
             cur = self.get_cursor()
@@ -86,10 +87,10 @@ class Category(DatabaseConfig):
         Update category, where id is the category's ID. Returns False on failure else True for success.
         """
 
-        sql = "UPDATE category SET "
-        sql += placeholder_update(list(kwargs.keys()))
-        sql += " WHERE "
-        sql += placeholder_update(["id"])
+        sql = " ".join(["UPDATE category SET",
+                        placeholder_update(list(kwargs.keys())),
+                        "WHERE",
+                        placeholder_update(["id"])])
 
         values = list(kwargs.values()) + [id]
 
@@ -101,8 +102,9 @@ class Category(DatabaseConfig):
         Delete category by ID. Returns False on failure else True for success.
         """
 
-        sql = "DELETE FROM category WHERE "
-        sql += placeholder_update(["id"])
+        sql = " ".join(["DELETE FROM category WHERE",
+                       placeholder_update(["id"])])
+                       
         values = [id, ]
 
         return self.write(sql, values)
