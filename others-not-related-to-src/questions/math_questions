@@ -1,0 +1,3 @@
+mq1;what 3 consercutive numbers sum up to 6?;1, 2, 3:0, 2, 4:0, 0, 6;1, 2, 3
+mq2;What are the roots of the quadratic equation, x^2+x-6=0?;2, 3:2, -3:-2, 3:-2, -3;2, -3
+mq3;What is the square of 9?;4.5:18:81:99;81
